@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using UnityEditor;
+using UnityEditor.Animations;
 using UnityEditorInternal;
 using UnityEngine;
 
@@ -11,7 +12,11 @@ public class AnimatorEventSMBEditor : Editor {
 	private ReorderableList list_onStateEnterTransitionEnd;
 	private ReorderableList list_onStateExitTransitionStart;
 	private ReorderableList list_onStateExitTransitionEnd;
-	private ReorderableList list_onStateUpdate;
+	private ReorderableList list_onNormalizedTimeReached;
+	private ReorderableList list_onStateUpdated;
+
+	private readonly List<GameObject> gameObjectsWithAnimator = new List<GameObject>();
+	private StateMachineBehaviourContext[] contexts;
 
 	private void OnEnable() {
 		CreateReorderableList("On State Enter Transition Start", 20, ref list_onStateEnterTransitionStart, serializedObject.FindProperty("onStateEnterTransitionStart"),
@@ -30,11 +35,37 @@ public class AnimatorEventSMBEditor : Editor {
 			(rect, index, isActive, isFocused) => {
 				EditorGUI.PropertyField(new Rect(rect.x, rect.y, rect.width, 18), serializedObject.FindProperty("onStateExitTransitionEnd").GetArrayElementAtIndex(index).FindPropertyRelative("callback"), GUIContent.none);
 			});
-		CreateReorderableList("On State Update", 60, ref list_onStateUpdate, serializedObject.FindProperty("onStateUpdate"),
+		CreateReorderableList("On State Update", 20, ref list_onStateUpdated, serializedObject.FindProperty("onStateUpdated"),
 			(rect, index, isActive, isFocused) => {
-				EditorGUI.PropertyField(new Rect(rect.x, rect.y, rect.width, 18), serializedObject.FindProperty("onStateUpdate").GetArrayElementAtIndex(index).FindPropertyRelative("callback"));
-				EditorGUI.PropertyField(new Rect(rect.x, rect.y + 20, rect.width, 20), serializedObject.FindProperty("onStateUpdate").GetArrayElementAtIndex(index).FindPropertyRelative("normalizedTime"));
-				EditorGUI.PropertyField(new Rect(rect.x, rect.y + 40, rect.width, 20), serializedObject.FindProperty("onStateUpdate").GetArrayElementAtIndex(index).FindPropertyRelative("repeat"));
+				EditorGUI.PropertyField(new Rect(rect.x, rect.y, rect.width, 18), serializedObject.FindProperty("onStateUpdated").GetArrayElementAtIndex(index).FindPropertyRelative("callback"), GUIContent.none);
+			});
+		CreateReorderableList("On Normalized Time Reached", 60, ref list_onNormalizedTimeReached, serializedObject.FindProperty("onNormalizedTimeReached"),
+			(rect, index, isActive, isFocused) => {
+				var property = serializedObject.FindProperty("onNormalizedTimeReached").GetArrayElementAtIndex(index);
+
+				float timeBefore = property.FindPropertyRelative("normalizedTime").floatValue;
+
+				EditorGUI.PropertyField(new Rect(rect.x, rect.y, rect.width, 18), property.FindPropertyRelative("callback"));
+				bool timeEdited = EditorGUI.PropertyField(new Rect(rect.x, rect.y + 20, rect.width, 20), property.FindPropertyRelative("normalizedTime"));
+				EditorGUI.PropertyField(new Rect(rect.x, rect.y + 40, rect.width, 20), property.FindPropertyRelative("repeat"));
+
+				float timeNow = property.FindPropertyRelative("normalizedTime").floatValue;
+
+				if (timeBefore != timeNow) {
+					if (!AnimationMode.InAnimationMode())
+						AnimationMode.StartAnimationMode();
+
+					foreach (var context in contexts) {
+						AnimatorState state = context.animatorObject as AnimatorState;
+						var previewClip = state.motion as AnimationClip;
+						if (null == previewClip) continue;
+						foreach (var targetObj in gameObjectsWithAnimator) {
+							AnimationMode.BeginSampling();
+							AnimationMode.SampleAnimationClip(targetObj, previewClip, property.FindPropertyRelative("normalizedTime").floatValue * previewClip.length);
+							AnimationMode.EndSampling();
+						}
+					}
+				}
 			});
 	}
 
@@ -65,12 +96,14 @@ public class AnimatorEventSMBEditor : Editor {
 		//DrawDefaultInspector();
 
 		if (eventsAvailable.Count == 0) {
-			var contexts = UnityEditor.Animations.AnimatorController.FindStateMachineBehaviourContext((AnimatorEventSMB) target);
+			gameObjectsWithAnimator.Clear();
+			contexts = UnityEditor.Animations.AnimatorController.FindStateMachineBehaviourContext((AnimatorEventSMB) target);
 			var aes = GameObject.FindObjectsOfType<AnimatorEvent>();
 
 			foreach (var c in contexts) {
 				foreach (var ae in aes) {
 					if (ae.GetComponent<Animator>().runtimeAnimatorController == c.animatorController) {
+						gameObjectsWithAnimator.Add(ae.gameObject);
 						foreach (var ev in ae.events) {
 							if (!eventsAvailable.Contains(ev.name)) {
 								eventsAvailable.Add(ev.name);
@@ -90,8 +123,14 @@ public class AnimatorEventSMBEditor : Editor {
 		list_onStateEnterTransitionEnd.DoLayoutList();
 		list_onStateExitTransitionStart.DoLayoutList();
 		list_onStateExitTransitionEnd.DoLayoutList();
-		list_onStateUpdate.DoLayoutList();
+		list_onStateUpdated.DoLayoutList();
+		list_onNormalizedTimeReached.DoLayoutList();
 
 		serializedObject.ApplyModifiedProperties();
+	}
+
+	private void OnDestroy() {
+		if (AnimationMode.InAnimationMode())
+			AnimationMode.StopAnimationMode();
 	}
 }

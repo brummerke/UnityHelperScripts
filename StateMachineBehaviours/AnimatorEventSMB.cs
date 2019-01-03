@@ -3,15 +3,15 @@ using UnityEngine;
 
 public class AnimatorEventSMB : StateMachineBehaviourExtended {
 	// Choose string from a dropdown
-	[UnityEngine.Serialization.FormerlySerializedAs("onStateEnter")]
 	public TimedEvent[] onStateEnterTransitionStart;
 	public TimedEvent[] onStateEnterTransitionEnd;
 	public TimedEvent[] onStateExitTransitionStart;
-	[UnityEngine.Serialization.FormerlySerializedAs("onStateExit")]
 	public TimedEvent[] onStateExitTransitionEnd;
 
 	// Show also in a timeline!
-	public TimedEvent[] onStateUpdate;
+	[UnityEngine.Serialization.FormerlySerializedAs("onStateUpdate")]
+	public TimedEvent[] onNormalizedTimeReached; // TO DO: Tick para indicar que se todavía no se ha hecho, se haga en OnExit
+	public TimedEvent[] onStateUpdated; // onStateUpdated instead of onStateUpdate because of a naming error. In the future it can be changed to onStateUpdate
 
 	private AnimatorEvent animatorEvent;
 
@@ -45,19 +45,22 @@ public class AnimatorEventSMB : StateMachineBehaviourExtended {
 		FireTimedEvents(onStateExitTransitionEnd, AnimatorEvent.EventType.OnExitTransitionEnd);
 
 		// Reset update events
-		for (int i = 0; i < onStateUpdate.Length; i++) {
-			onStateUpdate[i].nextNormalizedTime = 0;
+		for (int i = 0; i < onNormalizedTimeReached.Length; i++) {
+			onNormalizedTimeReached[i].nextNormalizedTime = 0;
 		}
 	}
 
 	public override void StateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {
-		for (int i = 0; i < onStateUpdate.Length; i++) {
-			if (stateInfo.normalizedTime >= onStateUpdate[i].normalizedTime + onStateUpdate[i].nextNormalizedTime) {
-				animatorEvent.Event(onStateUpdate[i].callback, AnimatorEvent.EventType.OnUpdate);
-				if (onStateUpdate[i].repeat)
-					onStateUpdate[i].nextNormalizedTime++;
+		for (int i = 0; i < onStateUpdated.Length; i++) {
+			animatorEvent.Event(onStateUpdated[i].callback, AnimatorEvent.EventType.OnUpdate);
+		}
+		for (int i = 0; i < onNormalizedTimeReached.Length; i++) {
+			if (stateInfo.normalizedTime >= onNormalizedTimeReached[i].normalizedTime + onNormalizedTimeReached[i].nextNormalizedTime) {
+				animatorEvent.Event(onNormalizedTimeReached[i].callback, AnimatorEvent.EventType.OnUpdate);
+				if (onNormalizedTimeReached[i].repeat)
+					onNormalizedTimeReached[i].nextNormalizedTime++;
 				else
-					onStateUpdate[i].nextNormalizedTime = int.MaxValue;
+					onNormalizedTimeReached[i].nextNormalizedTime = int.MaxValue;
 			}
 		}
 	}
