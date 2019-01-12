@@ -28,6 +28,9 @@ public abstract class StateMachineBehaviourExtended : StateMachineBehaviour {
 		else {
 			transitionHash = animator.GetAnimatorTransitionInfo(layerIndex).fullPathHash;
 		}
+
+		// First frame calls StateEnter, next ones call Update. Call Update AFTER Start too, on the same frame
+		StateUpdate(animator, stateInfo, layerIndex);
 	}
 
 	public sealed override void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {
