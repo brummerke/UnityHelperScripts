@@ -21,6 +21,8 @@ public class AnimatorEventSMB : StateMachineBehaviourExtended {
 		public float normalizedTime;
 		public string callback;
 		public bool repeat;
+		[Tooltip("Execute as OnStateExitTransitionEnd if this hasn't been executed yet")]
+		public bool executeOnExitEnds;
 		[NonSerialized] public int nextNormalizedTime;
 	}
 
@@ -44,8 +46,11 @@ public class AnimatorEventSMB : StateMachineBehaviourExtended {
 		//Debug.Log("[" + state.fullPathHash + "] (" + stateInfo.fullPathHash + " => " + animator.GetNextAnimatorStateInfo(layerIndex).fullPathHash + ") OnStateExit_TransitionEnds");
 		FireTimedEvents(onStateExitTransitionEnd, AnimatorEvent.EventType.OnExitTransitionEnd);
 
-		// Reset update events
+		// Finalize events that want to execute on end, and reset them for later
 		for (int i = 0; i < onNormalizedTimeReached.Length; i++) {
+			if (onNormalizedTimeReached[i].executeOnExitEnds && onNormalizedTimeReached[i].nextNormalizedTime == 0) {
+				animatorEvent.Event(onNormalizedTimeReached[i].callback, AnimatorEvent.EventType.OnUpdate);
+			}
 			onNormalizedTimeReached[i].nextNormalizedTime = 0;
 		}
 	}

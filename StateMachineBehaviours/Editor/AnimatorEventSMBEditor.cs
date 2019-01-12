@@ -47,7 +47,8 @@ public class AnimatorEventSMBEditor : Editor {
 
 				EditorGUI.PropertyField(new Rect(rect.x, rect.y, rect.width, 18), property.FindPropertyRelative("callback"));
 				bool timeEdited = EditorGUI.PropertyField(new Rect(rect.x, rect.y + 20, rect.width, 20), property.FindPropertyRelative("normalizedTime"));
-				EditorGUI.PropertyField(new Rect(rect.x, rect.y + 40, rect.width, 20), property.FindPropertyRelative("repeat"));
+				EditorGUI.PropertyField(new Rect(rect.x, rect.y + 40, rect.width / 2, 20), property.FindPropertyRelative("repeat"));
+				EditorGUI.PropertyField(new Rect(rect.x + rect.width / 2, rect.y + 40, rect.width / 2, 20), property.FindPropertyRelative("executeOnExitEnds"));
 
 				float timeNow = property.FindPropertyRelative("normalizedTime").floatValue;
 
