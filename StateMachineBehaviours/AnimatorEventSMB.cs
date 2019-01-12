@@ -10,7 +10,7 @@ public class AnimatorEventSMB : StateMachineBehaviourExtended {
 
 	// Show also in a timeline!
 	[UnityEngine.Serialization.FormerlySerializedAs("onStateUpdate")]
-	public TimedEvent[] onNormalizedTimeReached; // TO DO: Tick para indicar que se todavía no se ha hecho, se haga en OnExit
+	public TimedEvent[] onNormalizedTimeReached;
 	public TimedEvent[] onStateUpdated; // onStateUpdated instead of onStateUpdate because of a naming error. In the future it can be changed to onStateUpdate
 
 	private AnimatorEvent animatorEvent;
