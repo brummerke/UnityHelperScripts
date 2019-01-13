@@ -21,6 +21,12 @@ public class AnimatorEventSMBEditor : Editor {
 	private StateMachineBehaviourContext[] contexts;
 
 	private void OnEnable() {
+		// accessing serializedObject after reloading scripts can throw an exception. There is no way around it, so just ignore it
+		try {
+			var s = serializedObject;
+		}
+		catch (System.Exception) { return; }
+
 		CreateReorderableList("On State Enter Transition Start", 20, ref list_onStateEnterTransitionStart, serializedObject.FindProperty("onStateEnterTransitionStart"),
 			(rect, index, isActive, isFocused) => {
 				DrawCallbackField(rect, serializedObject.FindProperty("onStateEnterTransitionStart").GetArrayElementAtIndex(index));

@@ -21,6 +21,8 @@ public class AnimatorEvent : MonoBehaviour {
 	// This will prevent be one frame ahead, with the character's old pose from the previous animation
 	private Queue<string>[] queuedEvents = new Queue<string>[5];
 
+	public bool debug = false;
+
 	void Awake() {
 		for (int i = 0; i < queuedEvents.Length; i++) {
 			queuedEvents[i] = new Queue<string>();
@@ -28,10 +30,19 @@ public class AnimatorEvent : MonoBehaviour {
 		foreach (var elem in events) {
 			elementsDict.Add(elem.name, elem);
 		}
+
+		// Initialize references in SMBs
+		foreach (var smb in GetComponent<Animator>().GetBehaviours<AnimatorEventSMB>()) {
+			smb.SetAnimatorEvent(this);
+		}
 	}
 
 	public void Event(string name, EventType eventType) {
-		//Debug.Log("Event " + eventType + ": " + name);
+#if UNITY_EDITOR
+		if (debug) {
+			Debug.Log("Event [" + eventType + "]: " + name);
+		}
+#endif
 
 		EventElement e;
 		if (elementsDict.TryGetValue(name, out e)) {
