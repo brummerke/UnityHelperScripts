@@ -13,7 +13,7 @@ public class AnimatorEventSMB : StateMachineBehaviourExtended {
 	public TimedEvent[] onNormalizedTimeReached;
 	public TimedEvent[] onStateUpdated; // onStateUpdated instead of onStateUpdate because of a naming error. In the future it can be changed to onStateUpdate
 
-	private AnimatorEvent animatorEvent;
+	private AnimatorEvent animatorEvent; // Initialized by AnimatorEvent.Awake
 
 	[Serializable]
 	public struct TimedEvent {
@@ -28,7 +28,6 @@ public class AnimatorEventSMB : StateMachineBehaviourExtended {
 
 	public override void StateEnter_TransitionStarts(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {
 		//Debug.Log("[" + state.fullPathHash + "] (" + stateInfo.fullPathHash + ") OnStateEnter_TransitionStarts");
-		if (animatorEvent == null) animatorEvent = animator.GetComponent<AnimatorEvent>();
 		FireTimedEvents(onStateEnterTransitionStart, AnimatorEvent.EventType.OnEnterTransitionStart);
 	}
 
@@ -49,7 +48,7 @@ public class AnimatorEventSMB : StateMachineBehaviourExtended {
 		// Finalize events that want to execute on end, and reset them for later
 		for (int i = 0; i < onNormalizedTimeReached.Length; i++) {
 			if (onNormalizedTimeReached[i].executeOnExitEnds && onNormalizedTimeReached[i].nextNormalizedTime == 0) {
-				animatorEvent.Event(onNormalizedTimeReached[i].callback, AnimatorEvent.EventType.OnUpdate);
+				animatorEvent.Event(onNormalizedTimeReached[i].callback, AnimatorEvent.EventType.OnExitTransitionEnd);
 			}
 			onNormalizedTimeReached[i].nextNormalizedTime = 0;
 		}
@@ -68,6 +67,10 @@ public class AnimatorEventSMB : StateMachineBehaviourExtended {
 					onNormalizedTimeReached[i].nextNormalizedTime = int.MaxValue;
 			}
 		}
+	}
+
+	public void SetAnimatorEvent(AnimatorEvent animatorEvent) {
+		this.animatorEvent = animatorEvent;
 	}
 
 	private void FireTimedEvents(TimedEvent[] events, AnimatorEvent.EventType eventType) {
