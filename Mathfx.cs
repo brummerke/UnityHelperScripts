@@ -626,3 +626,10 @@ public static class Mathfx
     }
 
 }
+public enum LungeDir
+{
+    Forward,
+    Backward,
+    Side,
+    Target
+}
