@@ -13,7 +13,7 @@ public static class SmoothDamp {
 
 	[Serializable]
 	public struct Float {
-		[HideInNormalInspector] public float filteredValue;
+	/*	[HideInNormalInspector]*/ public float filteredValue;
 
 		private float pastTarget;
 
@@ -48,7 +48,8 @@ public static class SmoothDamp {
 
 	[Serializable]
 	public struct Angle {
-		[HideInNormalInspector] public float filteredValue;
+        /*	[HideInNormalInspector]*/
+        public float filteredValue;
 
 		private float pastTarget;
 
@@ -85,7 +86,8 @@ public static class SmoothDamp {
 
 	[Serializable]
 	public struct Vector3 {
-		[HideInNormalInspector] public UnityEngine.Vector3 filteredValue;
+        /*	[HideInNormalInspector]*/
+        public UnityEngine.Vector3 filteredValue;
 
 		private UnityEngine.Vector3 pastTarget;
 
@@ -120,7 +122,7 @@ public static class SmoothDamp {
 
 	[Serializable]
 	public struct EulerAngles {
-		[HideInNormalInspector] public UnityEngine.Vector3 filteredValue;
+			/*	[HideInNormalInspector]*/public UnityEngine.Vector3 filteredValue;
 
 		private UnityEngine.Vector3 pastTarget;
 
