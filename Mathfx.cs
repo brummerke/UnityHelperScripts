@@ -576,7 +576,7 @@ public static class Mathfx
             return false;
     }
 
- public static Vector3 SmoothApproach(Vector3 pastPosition, ref Vector3 pastTargetPosition, Vector3 targetPosition, float speed, float deltaTime)
+    public static Vector3 SmoothApproach(Vector3 pastPosition, ref Vector3 pastTargetPosition, Vector3 targetPosition, float speed, float deltaTime)
     {
         float t = deltaTime * speed;
         if (t == 0) return pastPosition;
@@ -586,6 +586,7 @@ public static class Mathfx
         pastTargetPosition = targetPosition;
         return targetPosition - v + f * Mathf.Exp(-t);
     }
+
     public static Vector2 GetPoint(Vector2 start, Vector2 end, float xSpeed, float gravity, float time)
     {
         var h_f = end.y - start.y;
@@ -604,6 +605,7 @@ public static class Mathfx
 
         return new Vector2(x, y);
     }
+
     public static Vector3 GetPoint(Vector3 start, Vector3 end, float xSpeed, float gravity, float time)
     {
         Vector3 xzDir = (end - start).xz();
@@ -625,7 +627,27 @@ public static class Mathfx
         return x * xzDir.normalized + new Vector3(0, y, 0);
     }
 
+    /// <summary>Get total distance between a list of transforms (order dependent)</summary>
+    public static float GetTotalDistance(Transform[] points)
+    {
+        if (points.Length >= 2)
+        {
+            float d = 0f;
+            for (int i = 0; i < points.Length - 1; i++)
+            {
+                d += Vector3.Distance(points[i].position, points[i + 1].position);
+            }
+            return d;
+        }
+        else
+        {
+            Debug.LogError("not enough points");
+            return 0f;
+        }
+    }
 }
+
+/// <summary>Directions used for  </summary>
 public enum LungeDir
 {
     Forward,
