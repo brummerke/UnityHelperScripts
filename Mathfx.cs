@@ -645,6 +645,30 @@ public static class Mathfx
             return 0f;
         }
     }
+
+    public static void ResetRotation(this Transform transform)
+    {
+
+        transform.rotation = Quaternion.identity;
+
+
+    }
+
+    public static void PlanarizeRotation(this Transform transform)
+    {
+        Vector3 fwd = transform.forward;
+        fwd.y = 0f;
+        fwd.Normalize();
+        transform.rotation = Quaternion.LookRotation(fwd, Vector3.up);
+    }
+
+    public static Quaternion RotatePlanarDirection(Vector3 dir)
+    {
+        if (dir == Vector3.zero)
+            Debug.Break();
+        dir.y = 0f;
+        return Quaternion.LookRotation(dir, Vector3.up);
+    }
 }
 
 /// <summary>Directions used for  </summary>
