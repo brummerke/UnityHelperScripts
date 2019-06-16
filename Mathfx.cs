@@ -669,6 +669,11 @@ public static class Mathfx
         dir.y = 0f;
         return Quaternion.LookRotation(dir, Vector3.up);
     }
+    public static Vector3 Planarize(this Vector3 v, bool normalize)
+    {
+        v = Vector3.ProjectOnPlane(v, Vector3.up);
+        return normalize ? v.normalized : v;
+    }
 }
 
 /// <summary>Directions used for  </summary>
