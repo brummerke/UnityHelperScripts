@@ -648,10 +648,7 @@ public static class Mathfx
 
     public static void ResetRotation(this Transform transform)
     {
-
         transform.rotation = Quaternion.identity;
-
-
     }
 
     public static void PlanarizeRotation(this Transform transform)
@@ -669,10 +666,21 @@ public static class Mathfx
         dir.y = 0f;
         return Quaternion.LookRotation(dir, Vector3.up);
     }
+
     public static Vector3 Planarize(this Vector3 v, bool normalize)
     {
-        v = Vector3.ProjectOnPlane(v, Vector3.up);
-        return normalize ? v.normalized : v;
+        Vector3 vP = v;
+        vP = Vector3.ProjectOnPlane(vP, Vector3.up);
+        vP = normalize ? vP.normalized : vP;
+        // Debug.Log(v.y);
+        return vP;
+    }
+
+    public static Vector3 NearestPointOnAxis(this Vector3 axisDirection, Vector3 point, bool isNormalized = false)
+    {
+        if (!isNormalized) axisDirection.Normalize();
+        var d = Vector3.Dot(point, axisDirection);
+        return axisDirection * d;
     }
 }
 
