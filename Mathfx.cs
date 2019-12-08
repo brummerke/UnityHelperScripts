@@ -646,11 +646,16 @@ public static class Mathfx
         }
     }
 
+
     public static void ResetRotation(this Transform transform)
     {
         transform.rotation = Quaternion.identity;
     }
 
+
+    /// <summary>
+    /// Flattens the rotation on a transform
+    /// </summary>
     public static void PlanarizeRotation(this Transform transform)
     {
         Vector3 fwd = transform.forward;
@@ -659,6 +664,9 @@ public static class Mathfx
         transform.rotation = Quaternion.LookRotation(fwd, Vector3.up);
     }
 
+    /// <summary>
+    /// Creates a rotation, Y axis up
+    /// </summary>
     public static Quaternion RotatePlanarDirection(Vector3 dir)
     {
         if (dir == Vector3.zero)
@@ -667,6 +675,9 @@ public static class Mathfx
         return Quaternion.LookRotation(dir, Vector3.up);
     }
 
+    /// <summary>
+    /// Flatten a vector
+    /// </summary>
     public static Vector3 Planarize(this Vector3 v, bool normalize)
     {
         Vector3 vP = v;
@@ -674,6 +685,16 @@ public static class Mathfx
         vP = normalize ? vP.normalized : vP;
         // Debug.Log(v.y);
         return vP;
+    }
+
+    /// <summary>
+    /// Gets a vector offset on the plane between two points
+    /// </summary>
+    public static Vector3 PlanarFromTo(Vector3 from, Vector3 to,bool normalize)
+    {
+        Vector3 a = to - from;
+
+        return Planarize(a, normalize);
     }
 
     public static Vector3 NearestPointOnAxis(this Vector3 axisDirection, Vector3 point, bool isNormalized = false)
