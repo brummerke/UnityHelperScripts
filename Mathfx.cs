@@ -358,6 +358,11 @@ public static class Mathfx
         return rays;
     }
 
+    public static float Damp(float a, float b, float lambda, float dt)
+    {
+        return Mathf.Lerp(a, b, 1 - Mathf.Exp(-lambda * dt));
+    }
+
     public static Vector3[] GetConeLocal(float spreadAngle)
     {
         Vector3[] coneDirs = new Vector3[5];
@@ -646,12 +651,10 @@ public static class Mathfx
         }
     }
 
-
     public static void ResetRotation(this Transform transform)
     {
         transform.rotation = Quaternion.identity;
     }
-
 
     /// <summary>
     /// Flattens the rotation on a transform
@@ -690,7 +693,7 @@ public static class Mathfx
     /// <summary>
     /// Gets a vector offset on the plane between two points
     /// </summary>
-    public static Vector3 PlanarFromTo(Vector3 from, Vector3 to,bool normalize)
+    public static Vector3 PlanarFromTo(Vector3 from, Vector3 to, bool normalize)
     {
         Vector3 a = to - from;
 
