@@ -360,7 +360,7 @@ public static class Mathfx
 
     public static float Damp(float a, float b, float lambda, float dt)
     {
-        return Mathf.Lerp(a, b, 1 - Mathf.Exp(-lambda * dt));
+        return Mathfx.Sinerp(a, b, 1 - Mathf.Exp(-lambda * dt));
     }
 
     public static Vector3[] GetConeLocal(float spreadAngle)
