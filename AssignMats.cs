@@ -34,6 +34,13 @@ public class AssignMats : EditorWindow
             renderers[i].material = g;
         }
 
+        SkinnedMeshRenderer[] renderersSkin = Selection.activeGameObject.GetComponentsInChildren<SkinnedMeshRenderer>();
+
+        for (int i = 0; i < renderersSkin.Length; i++)
+        {
+            renderersSkin[i].material = g;
+        }
+
         EditorSceneManager.MarkAllScenesDirty();
     }
 }
