@@ -18,7 +18,7 @@ public class AssignMats : EditorWindow
     private void OnGUI()
     {
         g = (Material)EditorGUILayout.ObjectField(g, typeof(Material), true);
-        if (GUILayout.Button("Fix Sources"))
+        if (GUILayout.Button("Replace Materials"))
         {
             if (g != null)
                 UpdateButtons();
@@ -31,14 +31,16 @@ public class AssignMats : EditorWindow
        
         for (int i = 0; i < renderers.Length; i++)
         {
-            renderers[i].material = g;
+            for (int j = 0; j < renderers[i].materials.Length; j++)
+            renderers[i].materials[j] = g;
         }
 
         SkinnedMeshRenderer[] renderersSkin = Selection.activeGameObject.GetComponentsInChildren<SkinnedMeshRenderer>();
 
         for (int i = 0; i < renderersSkin.Length; i++)
         {
-            renderersSkin[i].material = g;
+            for (int j = 0; j < renderersSkin[i].materials.Length; j++)
+                renderersSkin[i].materials[j] = g;
         }
 
         EditorSceneManager.MarkAllScenesDirty();
