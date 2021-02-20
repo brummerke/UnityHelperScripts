@@ -13,7 +13,12 @@ public static class Mathfx
     {
         return new Vector2(Hermite(start.x, end.x, value), Hermite(start.y, end.y, value));
     }
-
+    /// <summary>
+    /// used for iterating on enums
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <returns></returns>
+   public static int EnumCount<T>() { return System.Enum.GetValues(typeof(T)).Length; }
     public static Vector3 Hermite(Vector3 start, Vector3 end, float value)
     {
         return new Vector3(Hermite(start.x, end.x, value), Hermite(start.y, end.y, value), Hermite(start.z, end.z, value));
